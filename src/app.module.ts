@@ -7,6 +7,7 @@ import { SubjectsModule } from './subjects/subjects.module';
 import { InfosModule } from './infos/infos.module';
 import { TodosModule } from './todos/todos.module';
 import { UsersModule } from './users/users.module';
+import { User } from './users/user.entity';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { UsersModule } from './users/users.module';
       username: 'application',
       password: 'application',
       database: 'application',
-      entities: [],
+      entities: [User],
       synchronize: true
     }),
     PostsModule,
