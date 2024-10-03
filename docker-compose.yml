@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  database:
+    image: postgres:16
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: application
+      POSTGRES_USER: application
+      POSTGRES_DB: application
+      TZ: America/Sao_Paulo
+    volumes:
+      - application_data:/var/lib/postgresql/data
+
+volumes:
+  application_data:
