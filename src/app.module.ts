@@ -8,6 +8,7 @@ import { InfosModule } from './infos/infos.module';
 import { TodosModule } from './todos/todos.module';
 import { UsersModule } from './users/users.module';
 import { User } from './users/user.entity';
+import { Token } from './users/auth/token.entity';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { User } from './users/user.entity';
       username: 'application',
       password: 'application',
       database: 'application',
-      entities: [User],
+      entities: [User, Token],
       synchronize: true
     }),
     PostsModule,

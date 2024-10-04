@@ -1,12 +1,13 @@
 import { Body, Controller, Get, Post, UnprocessableEntityException } from '@nestjs/common';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UsersService } from './users.service';
+import { UserResponseDTO } from './dto/response-user.dto';
 
 @Controller('users')
 export class UsersController {
     constructor(private service: UsersService) { }
     @Post()
-    createUser(@Body() body: CreateUserDTO) {
+    async createUser(@Body() body: CreateUserDTO) {
         if (body.email !== body.emailConfirmation) {
             throw new UnprocessableEntityException('Mismatching email and emailConfirmation.')
         }
@@ -15,7 +16,7 @@ export class UsersController {
             throw new UnprocessableEntityException('Mismatching password and passwordConfirmation.')
         }
 
-        return this.service.create(body)
+        return UserResponseDTO.from(await this.service.create(body))
     }
 
     @Get()

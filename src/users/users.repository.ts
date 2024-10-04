@@ -1,5 +1,5 @@
 import { Injectable, UnprocessableEntityException } from "@nestjs/common";
-import { EntityManager, QueryFailedError } from "typeorm";
+import { EntityManager, FindOneOptions, QueryFailedError } from "typeorm";
 import { CreateUserDTO } from "./dto/create-user.dto";
 import { User } from "./user.entity";
 
@@ -41,5 +41,9 @@ export class UsersRepository {
         } catch (e) {
             this.catchQueryError(e)
         }
+    }
+
+    async findOne(options: FindOneOptions<User>) {
+        return this.manager.findOne(User, options)
     }
 }
