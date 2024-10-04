@@ -9,6 +9,7 @@ import { TodosModule } from './todos/todos.module';
 import { UsersModule } from './users/users.module';
 import { User } from './users/user.entity';
 import { Token } from './users/auth/token.entity';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { Token } from './users/auth/token.entity';
       entities: [User, Token],
       synchronize: true
     }),
+    ScheduleModule.forRoot(),
     PostsModule,
     SubjectsModule,
     InfosModule,

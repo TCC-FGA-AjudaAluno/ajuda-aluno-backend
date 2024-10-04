@@ -7,10 +7,11 @@ import { User } from '../user.entity';
 import { CreateTokenDTO } from './dto/create-token.dto';
 import { randomUUID } from 'crypto';
 import { AuthRepository } from './auth.repository';
+import { SchedulerRegistry } from '@nestjs/schedule';
 
 @Injectable()
 export class AuthService {
-    constructor(private userService: UsersService, private repo: AuthRepository) { }
+    constructor(private userService: UsersService, private repo: AuthRepository, private scheduler: SchedulerRegistry) { }
     async authenticate(data: AuthenticateUserDTO) {
         if (!data.email && !data.registrationNumber) {
             throw new UnprocessableEntityException('Missing user email or registrationNumber.')
@@ -35,6 +36,12 @@ export class AuthService {
         tokenDto.token = randomUUID()
 
         let token = await this.repo.createToken(tokenDto)
+
+        let invalidationCallback = () => {
+            this.repo.invalidateToken(token.id)
+        }
+        let timeout = setTimeout(invalidationCallback, token.expiresIn * 1000)
+        this.scheduler.addTimeout(`invalidate#${token.id}`, timeout)
 
         return {
             accessToken: token.token,

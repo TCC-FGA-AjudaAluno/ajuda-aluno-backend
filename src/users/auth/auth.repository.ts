@@ -18,4 +18,14 @@ export class AuthRepository {
 
         return token
     }
+
+    async invalidateToken(tokenId: string) {
+        let result = await this.manager.update(Token, {
+            id: tokenId
+        }, {
+            valid: false
+        })
+
+        return result
+    }
 }
