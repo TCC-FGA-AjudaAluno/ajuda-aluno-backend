@@ -28,4 +28,24 @@ export class AuthRepository {
 
         return result
     }
+
+    async findToken(token: string) {
+        return this.manager.findOne(Token, {
+            where: {
+                token,
+                valid: true
+            },
+            relations: ["user"],
+            select: {
+                user: {
+                    id: true,
+                    email: true,
+                    name: true,
+                    registrationNumber: true,
+                    points: false,
+                    rank: false
+                }
+            }
+        })
+    }
 }

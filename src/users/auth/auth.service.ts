@@ -48,4 +48,14 @@ export class AuthService {
             expiresIn: token.expiresIn
         }
     }
+
+    async introspect(token: string) {
+        let result = await this.repo.findToken(token)
+        if (!result) {
+            throw new UnauthorizedException('Invalid Token')
+        }
+
+        delete result.id
+        return result
+    }
 }
