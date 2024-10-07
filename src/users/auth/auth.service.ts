@@ -49,7 +49,7 @@ export class AuthService {
         }
     }
 
-    async introspect(token: string, raise: boolean = false) {
+    async introspect(token: string, raise: boolean = true) {
         let result = await this.repo.findToken(token)
         if (!result && raise) {
             throw new UnauthorizedException('Invalid Token')
@@ -57,15 +57,23 @@ export class AuthService {
             return undefined
         }
 
-        delete result.id
+        if (raise) delete result.id
         return result
     }
 
     async validate(token: string): Promise<boolean> {
-        let result = await this.introspect(token)
-        if (!result) {
+        let tk = await this.introspect(token, false)
+        if (!tk) {
             return false
         }
+        let now = new Date()
+        let tokenValidityPeriod = new Date(tk.issuedAt.getTime() + (tk.expiresIn * 1000))
+
+        if (now > tokenValidityPeriod) {
+            this.repo.invalidateToken(tk.id)
+            return false
+        }
+
         return true
     }
 }
