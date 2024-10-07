@@ -4,6 +4,8 @@ import { CreateUserDTO } from './dto/create-user.dto';
 import { UsersRepository } from './users.repository';
 import { FindOneOptions } from 'typeorm';
 import { User } from './user.entity';
+import { UUID } from 'typeorm/driver/mongodb/bson.typings';
+import { UserResponseDTO } from './dto/response-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -18,7 +20,8 @@ export class UsersService {
     }
 
     async findAll() {
-        return this.repo.findAll()
+        let users = await this.repo.findAll()
+        return users.map(user => UserResponseDTO.from(user))
     }
 
     async findOne(options: FindOneOptions<User>) {
@@ -28,5 +31,15 @@ export class UsersService {
         }
 
         return user
+    }
+
+    async findById(userId: string) {
+        let user = await this.findOne({
+            where: {
+                id: userId
+            }
+        })
+
+        return UserResponseDTO.from(user)
     }
 }

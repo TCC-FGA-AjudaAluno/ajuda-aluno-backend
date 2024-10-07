@@ -1,11 +1,15 @@
-import { Body, Controller, Get, Post, UnprocessableEntityException } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Param, Post, UnprocessableEntityException, UseGuards } from '@nestjs/common';
+import { AuthGuard } from './auth/auth.guard';
 import { CreateUserDTO } from './dto/create-user.dto';
-import { UsersService } from './users.service';
 import { UserResponseDTO } from './dto/response-user.dto';
+import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
-    constructor(private service: UsersService) { }
+    private readonly logger = new Logger(UsersController.name)
+    constructor(
+        private service: UsersService
+    ) { }
     @Post()
     async createUser(@Body() body: CreateUserDTO) {
         if (body.email !== body.emailConfirmation) {
@@ -22,5 +26,13 @@ export class UsersController {
     @Get()
     async findAllUsers() {
         return this.service.findAll()
+    }
+
+    @UseGuards(AuthGuard)
+    @Get(':id')
+    async findUser(@Param('id') userId: string) {
+        this.logger.log(`Searching for user with id: ${userId}`)
+        let user = await this.service.findById(userId)
+        return user
     }
 }

@@ -10,6 +10,7 @@ import { UsersModule } from './users/users.module';
 import { User } from './users/user.entity';
 import { Token } from './users/auth/token.entity';
 import { ScheduleModule } from '@nestjs/schedule';
+import { Info } from './infos/infos.entity';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       username: 'application',
       password: 'application',
       database: 'application',
-      entities: [User, Token],
+      entities: [User, Token, Info],
       synchronize: true
     }),
     ScheduleModule.forRoot(),

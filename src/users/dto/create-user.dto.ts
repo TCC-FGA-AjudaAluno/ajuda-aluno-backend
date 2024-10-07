@@ -7,4 +7,5 @@ export class CreateUserDTO {
     emailConfirmation: string
     registrationNumber: string
     enrollDate: Date
+    role?: "admin" | "user"
 }

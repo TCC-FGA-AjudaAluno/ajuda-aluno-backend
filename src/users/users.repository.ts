@@ -1,7 +1,7 @@
 import { Injectable, UnprocessableEntityException } from "@nestjs/common";
-import { EntityManager, FindOneOptions, QueryFailedError } from "typeorm";
+import { EntityManager, FindManyOptions, FindOneOptions, QueryFailedError } from "typeorm";
 import { CreateUserDTO } from "./dto/create-user.dto";
-import { User } from "./user.entity";
+import { User, UserRole } from "./user.entity";
 
 @Injectable()
 export class UsersRepository {
@@ -26,6 +26,7 @@ export class UsersRepository {
                 name: data.name,
                 password: data.password,
                 registrationNumber: data.registrationNumber,
+                role: data.role as UserRole ?? UserRole.USER
             })
 
             return user
@@ -34,9 +35,9 @@ export class UsersRepository {
         }
     }
 
-    async findAll(): Promise<User[]> {
+    async findAll(options?: FindManyOptions<User>): Promise<User[]> {
         try {
-            let users = await this.manager.find(User)
+            let users = await this.manager.find(User, options)
             return users
         } catch (e) {
             this.catchQueryError(e)
