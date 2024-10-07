@@ -7,14 +7,21 @@ import { Request } from "express";
 export class AuthGuard implements CanActivate {
     constructor(private service: AuthService) { }
 
-    canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+    async canActivate(context: ExecutionContext): Promise<boolean> {
         let request = context.switchToHttp().getRequest<Request>()
         let token = this.getToken(request)
         if (!token) {
             throw new UnauthorizedException()
         }
 
-        return this.service.validate(token)
+        const valid = await this.service.validate(token)
+
+        if (valid) {
+            const tk = await this.service.introspect(token, false)
+            request['auth'] = tk
+        }
+
+        return valid
     }
 
     getToken(request: Request): string | undefined {

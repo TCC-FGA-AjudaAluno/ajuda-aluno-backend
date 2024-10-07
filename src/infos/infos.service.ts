@@ -13,14 +13,26 @@ export class InfosService {
         this.logger.log('Creating new info in database')
         const info = await this.manager.save(Info, {
             title: data.title,
-            content: data.content
+            content: data.content,
+            author: {
+                id: data.author_id ?? null
+            }
         })
 
         return info
     }
 
     async findAll() {
-        const [data, count] = await this.manager.findAndCount(Info)
+        const [data, count] = await this.manager.findAndCount(Info, {
+            relations: ['author'],
+            select: {
+                author: {
+                    id: true,
+                    points: false,
+                    rank: false
+                }
+            }
+        })
         this.logger.log(`Found ${count} items`)
         return data
     }
@@ -29,6 +41,12 @@ export class InfosService {
         const info = await this.manager.findOne(Info, {
             where: {
                 id: infoId
+            },
+            relations: ['author'],
+            select: {
+                author: {
+                    id: true
+                }
             }
         })
 

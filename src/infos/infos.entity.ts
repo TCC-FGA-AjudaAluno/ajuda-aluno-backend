@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { User } from "src/users/user.entity";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity({
     orderBy: {
@@ -20,4 +21,8 @@ export class Info {
 
     @UpdateDateColumn()
     updatedAt: Date
+
+    @JoinColumn({ name: 'author_id' })
+    @ManyToOne(() => User, { nullable: true })
+    author: User
 }
