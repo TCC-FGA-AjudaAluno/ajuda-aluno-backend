@@ -45,7 +45,9 @@ export class InfosService {
             relations: ['author'],
             select: {
                 author: {
-                    id: true
+                    id: true,
+                    points: false,
+                    rank: false
                 }
             }
         })
