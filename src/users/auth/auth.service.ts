@@ -1,5 +1,6 @@
 import { Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { AuthenticateUserDTO } from './dto/authenticate-user.dto';
+import * as jwt from 'jsonwebtoken'
 import * as bcrypt from 'bcrypt'
 import { UsersService } from '../users.service';
 import { FindOptionsSelect, FindOptionsWhere } from 'typeorm';
@@ -35,6 +36,8 @@ export class AuthService {
         tokenDto.expiresIn = data.expiresIn ?? 600
         tokenDto.token = randomUUID()
 
+        await this.createToken(tokenDto)
+
         let token = await this.repo.createToken(tokenDto)
 
         let invalidationCallback = () => {
@@ -47,6 +50,21 @@ export class AuthService {
             accessToken: token.token,
             expiresIn: token.expiresIn
         }
+    }
+
+    private async createToken(data: CreateTokenDTO) {
+        // Here we create a JWT Token
+        const token = jwt.sign({
+            userId: data.user.id,
+            email: data.user.email,
+            regNum: data.user.registrationNumber,
+        }, 'secret-goes-here', {
+            expiresIn: data.expiresIn,
+            subject: data.user.id
+        })
+
+        data.token = token
+        return data
     }
 
     async introspect(token: string, raise: boolean = true) {
