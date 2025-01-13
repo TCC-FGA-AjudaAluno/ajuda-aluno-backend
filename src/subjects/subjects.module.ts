@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersModule } from 'src/users/users.module';
 import { MaterialsModule } from './materials/materials.module';
 import { SubjectsController } from './subjects.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Subject } from './subjects.entity';
+import { Subject } from './entities/subjects.entity';
 import { SubjectsService } from './subjects.service';
-import { AuthModule } from 'src/users/auth/auth.module';
-import { UsersModule } from 'src/users/users.module';
+import { Enrollment } from './entities/enrollment.entity';
 
 @Module({
-  imports: [MaterialsModule, TypeOrmModule.forFeature([Subject]), UsersModule],
+  imports: [MaterialsModule, TypeOrmModule.forFeature([Subject, Enrollment]), UsersModule],
   controllers: [SubjectsController],
   providers: [SubjectsService]
 })

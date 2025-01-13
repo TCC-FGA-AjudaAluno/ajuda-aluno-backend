@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Enrollment } from "src/subjects/entities/enrollment.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 export enum UserRole {
     ADMIN = "admin",
@@ -36,4 +37,7 @@ export class User {
 
     @Column({ enum: UserRole, type: 'enum', default: UserRole.USER })
     role: UserRole
+
+    @OneToMany(() => Enrollment, (enrollment) => enrollment.user)
+    subjects: Enrollment[];
 }
