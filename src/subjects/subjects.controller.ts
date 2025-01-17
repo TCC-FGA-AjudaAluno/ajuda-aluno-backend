@@ -1,17 +1,30 @@
-import { Body, Controller, Get, NotFoundException, Param, Post, UseGuards } from '@nestjs/common';
-import { randomUUID } from 'crypto';
-import { SubjectsService } from './subjects.service';
-import { CreateSubjectDTO } from './dto/create-subject.dto';
+import { Body, Controller, Get, Param, ParseBoolPipe, Post, Query, Request, UseGuards, UsePipes } from '@nestjs/common';
+import { Request as ExpressRequest } from 'express';
 import { AuthGuard } from 'src/users/auth/auth.guard';
+import { Token } from 'src/users/auth/token.entity';
+import { CreateSubjectDTO } from './dto/create-subject.dto';
 import { EnrollStudentDTO } from './dto/enroll-student.dto';
+import { SubjectsService } from './subjects.service';
 
 @Controller('subjects')
 export class SubjectsController {
     constructor(private service: SubjectsService) {}
     
     @UseGuards(AuthGuard)
+    @UsePipes(ParseBoolPipe)
     @Get('/')
-    async findAll() {
+    async findAll(
+        @Query('enrolled') enrolled: boolean,
+        @Request() req: ExpressRequest
+    ) {
+
+        const userToken: Token = req['auth']
+        const userId = userToken.user.id
+        console.log(userToken)
+        if (enrolled) {
+            const result = await this.service.findEnrolledSubjects(userId)
+            return result
+        }
         return this.service.findAll()
     }
 
@@ -24,8 +37,8 @@ export class SubjectsController {
     @UseGuards(AuthGuard)
     @Post('/enroll')
     async enroll(@Body() body: EnrollStudentDTO) {
-        console.log("User is enrolling in this course!")
-        return this.service.enroll(body)
+        const result = this.service.enroll(body)
+        return result
     }
 
     @UseGuards(AuthGuard)

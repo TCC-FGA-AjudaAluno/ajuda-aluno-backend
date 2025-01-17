@@ -3,7 +3,7 @@ import { randomUUID } from 'crypto';
 import { EntityManager } from 'typeorm';
 import { Subject } from './entities/subjects.entity';
 import { CreateSubjectDTO } from './dto/create-subject.dto';
-import { EnrollStudentDTO } from './dto/enroll-student.dto';
+import { EnrollmentResultDTO, EnrollStudentDTO } from './dto/enroll-student.dto';
 import { Enrollment } from './entities/enrollment.entity';
 import { User } from 'src/users/user.entity';
 
@@ -35,6 +35,17 @@ export class SubjectsService {
         return result
     }
 
+    async findEnrolledSubjects(userId: string) {
+        const result = await this.em.createQueryBuilder(Subject, 's')
+            .distinct(true)
+            .innerJoin('s.enrolledStudents', 'e', 'e.userId = :userId', {userId})
+            .getMany();
+
+
+        console.log(result)
+        return result
+    }
+
     async enroll(data: EnrollStudentDTO) {
         const enrollment = new Enrollment()
         const user = await this.em.findOne(User, {where: {id: data.userId}})
@@ -45,10 +56,32 @@ export class SubjectsService {
         }
 
         enrollment.period = data.period
+        enrollment.user = user
+        enrollment.subject = subject
 
         const result = await this.em.save(Enrollment, enrollment, {
-            reload: true
+            reload: true,
         })
-        return result
+
+        const enrollmentResult = await this.em.findOne(Enrollment, {
+            where: {id: enrollment.id},
+            select: {
+                id: true,
+                period: true,
+                user: {
+                    id: true
+                },
+                subject: {
+                    id: true
+                }
+            }
+        })
+
+        const dto = new EnrollmentResultDTO()
+        dto.id = result.id
+        dto.period = result.period
+        dto.subjectId = result.subject.id
+        dto.userId = result.user.id
+        return dto
     }
 }
