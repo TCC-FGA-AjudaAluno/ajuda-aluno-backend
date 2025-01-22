@@ -6,9 +6,10 @@ import { SubjectsController } from './subjects.controller';
 import { Subject } from './entities/subjects.entity';
 import { SubjectsService } from './subjects.service';
 import { Enrollment } from './entities/enrollment.entity';
+import { PostsModule } from './posts/posts.module';
 
 @Module({
-  imports: [MaterialsModule, TypeOrmModule.forFeature([Subject, Enrollment]), UsersModule],
+  imports: [MaterialsModule, TypeOrmModule.forFeature([Subject, Enrollment]), UsersModule, PostsModule],
   controllers: [SubjectsController],
   providers: [SubjectsService]
 })

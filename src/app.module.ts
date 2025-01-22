@@ -1,18 +1,18 @@
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm'
-import { PostsModule } from './posts/posts.module';
-import { SubjectsModule } from './subjects/subjects.module';
-import { InfosModule } from './infos/infos.module';
-import { TodosModule } from './todos/todos.module';
-import { UsersModule } from './users/users.module';
-import { User } from './users/user.entity';
-import { Token } from './users/auth/token.entity';
-import { ScheduleModule } from '@nestjs/schedule';
 import { Info } from './infos/infos.entity';
-import { Subject } from './subjects/entities/subjects.entity';
+import { InfosModule } from './infos/infos.module';
 import { Enrollment } from './subjects/entities/enrollment.entity';
+import { Subject } from './subjects/entities/subjects.entity';
+import { SubjectsModule } from './subjects/subjects.module';
+import { TodosModule } from './todos/todos.module';
+import { Token } from './users/auth/token.entity';
+import { User } from './users/user.entity';
+import { UsersModule } from './users/users.module';
+import { Post } from './subjects/posts/posts.entity';
 
 @Module({
   imports: [
@@ -23,11 +23,10 @@ import { Enrollment } from './subjects/entities/enrollment.entity';
       username: 'application',
       password: 'application',
       database: 'application',
-      entities: [User, Token, Info, Subject, Enrollment],
+      entities: [User, Token, Info, Subject, Enrollment, Post],
       synchronize: true
     }),
     ScheduleModule.forRoot(),
-    PostsModule,
     SubjectsModule,
     InfosModule,
     TodosModule,
