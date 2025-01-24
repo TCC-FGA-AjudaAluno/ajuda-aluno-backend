@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseBoolPipe, Post, Query, Request, UseGuards, UsePipes } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, ParseBoolPipe, Post, Query, Request, UseGuards, UsePipes } from '@nestjs/common';
 import { Request as ExpressRequest } from 'express';
 import { AuthGuard } from 'src/users/auth/auth.guard';
 import { Token } from 'src/users/auth/token.entity';
@@ -39,6 +39,17 @@ export class SubjectsController {
     async enroll(@Body() body: EnrollStudentDTO) {
         const result = this.service.enroll(body)
         return result
+    }
+
+    @UseGuards(AuthGuard)
+    @HttpCode(204)
+    @Delete('/:subjectId/enroll')
+    async unenroll(
+        @Param('subjectId') subjectId: string,
+        @Request() req: ExpressRequest
+    ) {
+        const userToken: Token = req['auth']
+        await this.service.unenroll(subjectId, userToken.user.id)
     }
 
     @UseGuards(AuthGuard)

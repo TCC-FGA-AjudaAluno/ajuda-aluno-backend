@@ -84,4 +84,25 @@ export class SubjectsService {
         dto.userId = result.user.id
         return dto
     }
+
+    async unenroll(subjectId: string, userId: string) {
+        const enrollments = await this.em.find(Enrollment, {
+            where: {
+                subject: {
+                    id: subjectId
+                },
+
+                user: {
+                    id: userId
+                },
+            },
+            relations: {
+                subject: true,
+                user: true
+            }
+        })
+
+        const result = await this.em.remove(enrollments)
+        return result
+    }
 }
