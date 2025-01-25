@@ -33,7 +33,7 @@ export class AuthService {
 
         let tokenDto = new CreateTokenDTO()
         tokenDto.user = user
-        tokenDto.expiresIn = data.expiresIn ?? 600
+        tokenDto.expiresIn = data.expiresIn ?? 86400
         tokenDto.token = randomUUID()
 
         await this.createToken(tokenDto)
