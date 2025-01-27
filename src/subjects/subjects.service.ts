@@ -25,6 +25,9 @@ export class SubjectsService {
         const result = await this.em.findOne(Subject, {
             where: {
                 id
+            },
+            relations: {
+                posts: true
             }
         })
 

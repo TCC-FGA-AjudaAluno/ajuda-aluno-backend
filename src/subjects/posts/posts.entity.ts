@@ -1,5 +1,5 @@
 import { User } from "src/users/user.entity";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Subject } from "../entities/subjects.entity";
 
 @Entity()
@@ -20,6 +20,11 @@ export class Post {
     @Column()
     subjectId: string
 
+    @CreateDateColumn()
+    createdAt: Date
+
+    @UpdateDateColumn()
+    updatedAt: Date
 
     @ManyToOne(() => User)
     @JoinColumn({name: 'authorId'})
