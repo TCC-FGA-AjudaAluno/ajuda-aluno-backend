@@ -1,5 +1,5 @@
 import { HttpException, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { EntityManager, TypeORMError } from 'typeorm';
+import { DeepPartial, EntityManager, TypeORMError } from 'typeorm';
 import { CreatePostDTO } from './dto/create-post.dto';
 import { Post } from './posts.entity';
 
@@ -45,12 +45,70 @@ export class PostsService {
                     name: true,
                     email: true,
                     id: true,
-                    registrationNumber: true
+                    registrationNumber: true,
+                    points: false,
+                    rank: false
                 }
             },
         })
 
         console.log(`Found ${postsCount} ${postsCount > 1 || postsCount === 0 ? 'posts' : 'post'}.`)
         return posts
+    }
+
+    async findOne(postId: string) {
+        const result = await this.em.findOne(Post, {
+            where: {
+                id: postId
+            },
+            relations: {
+                author: true
+            },
+            select: {
+                id: true,
+                title: true,
+                content: true,
+                createdAt: true,
+                subjectId: true,
+                author: {
+                    name: true,
+                    email: true,
+                    id: true,
+                    registrationNumber: true,
+                    points: false,
+                    rank: false
+                }
+            },
+        })
+
+        return result
+    }
+
+    async update(postId: string, data: DeepPartial<Post>) {
+        try {
+            const result = await this.em.update(Post, postId, data)
+
+            console.log(result)
+
+            const post = await this.em.findOne(Post, {where: {id: postId}})
+            return post
+        } catch(e) {
+            if (e instanceof TypeORMError) {
+                console.log(e)
+                throw new UnprocessableEntityException(e)
+            }
+
+            throw new InternalServerErrorException('Unexpected Error.')
+        }
+    }
+
+    async remove(postId: string) {
+        const post = await this.em.findOne(Post, {
+            where: {
+                id: postId
+            }
+        })
+
+        return this.em.remove(post)
     }
 }

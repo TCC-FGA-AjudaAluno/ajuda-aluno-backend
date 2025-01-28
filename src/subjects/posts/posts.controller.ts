@@ -1,9 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthenticatedRequest } from 'src/users/auth/@types/authenticated-request';
 import { Token } from 'src/users/auth/token.entity';
 import { CreatePostDTO, CreatePostRequestDTO } from './dto/create-post.dto';
 import { PostsService } from './posts.service';
 import { AuthGuard } from 'src/users/auth/auth.guard';
+import { DeepPartial } from 'typeorm';
+import { Post as PostEntity } from './posts.entity';
 
 @Controller('subjects/:subjectId/posts')
 export class PostsController {
@@ -17,8 +19,13 @@ export class PostsController {
         return posts
     }
 
+    @UseGuards(AuthGuard)
     @Get('/:postId')
-    async findOne() { }
+    async findOne(@Param('postId') postId: string) {
+        const result = await this.service.findOne(postId)
+
+        return result
+    }
 
     @UseGuards(AuthGuard)
     @Post('/')
@@ -30,9 +37,17 @@ export class PostsController {
         return this.service.create(data)
     }
 
+    @UseGuards(AuthGuard)
     @Delete('/:postId')
-    async remove() { }
+    @HttpCode(204)
+    async remove(@Param('postId') postId: string) {
+        console.log('Removing post with id ' + postId)
+        return this.service.remove(postId)
+    }
 
+    @UseGuards(AuthGuard)
     @Patch('/:postId')
-    async update() { }
+    async update(@Param('postId') postId: string, @Body() body: DeepPartial<PostEntity>) {
+        return this.service.update(postId, body)
+    }
 }
