@@ -7,12 +7,13 @@ import { Info } from './infos/infos.entity';
 import { InfosModule } from './infos/infos.module';
 import { Enrollment } from './subjects/entities/enrollment.entity';
 import { Subject } from './subjects/entities/subjects.entity';
+import { Post } from './subjects/posts/posts.entity';
 import { SubjectsModule } from './subjects/subjects.module';
 import { TodosModule } from './todos/todos.module';
 import { Token } from './users/auth/token.entity';
 import { User } from './users/user.entity';
 import { UsersModule } from './users/users.module';
-import { Post } from './subjects/posts/posts.entity';
+import { Comment } from './subjects/posts/comments/comments.entity';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { Post } from './subjects/posts/posts.entity';
       username: 'application',
       password: 'application',
       database: 'application',
-      entities: [User, Token, Info, Subject, Enrollment, Post],
+      entities: [User, Token, Info, Subject, Enrollment, Post, Comment],
       synchronize: true
     }),
     ScheduleModule.forRoot(),

@@ -1,6 +1,7 @@
 import { User } from "src/users/user.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Subject } from "../entities/subjects.entity";
+import { Comment } from "./comments/comments.entity";
 
 @Entity()
 export class Post {
@@ -33,4 +34,7 @@ export class Post {
     @ManyToOne(() => Subject, subject => subject.posts)
     @JoinColumn({name: 'subjectId'})
     subject: Subject
+
+    @OneToMany(() => Comment, comment => comment.post)
+    comments: Comment[];
 }
