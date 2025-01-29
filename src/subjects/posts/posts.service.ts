@@ -61,9 +61,7 @@ export class PostsService {
             where: {
                 id: postId
             },
-            relations: {
-                author: true
-            },
+            relations: ['author', 'comments', 'comments.author'],
             select: {
                 id: true,
                 title: true,
@@ -74,11 +72,24 @@ export class PostsService {
                     name: true,
                     email: true,
                     id: true,
-                    registrationNumber: true,
-                    points: false,
-                    rank: false
+                    registrationNumber: true
+                },
+                comments: {
+                    id: true,
+                    content: true,
+                    createdAt: true,
+                    author: {
+                        id: true,
+                        name: true
+                    }
                 }
             },
+            order: {
+                createdAt: 'DESC',
+                comments: {
+                    createdAt: 'DESC'
+                },
+            }
         })
 
         return result

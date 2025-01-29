@@ -27,10 +27,10 @@ export class User {
     registrationNumber: string
 
     @Column({ default: 0, nullable: true })
-    points: number = 0
+    points: number
 
     @Column({ default: -1, nullable: true })
-    rank: number = -1
+    rank: number
 
     @Column('date')
     enrollDate: Date

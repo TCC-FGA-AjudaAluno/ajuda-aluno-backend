@@ -1,7 +1,7 @@
-import { HttpException, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { EntityManager, TypeORMError } from 'typeorm';
-import { CreateCommentDTO } from './dto/create-comment.dto';
 import { Comment } from './comments.entity';
+import { CreateCommentDTO } from './dto/create-comment.dto';
 
 @Injectable()
 export class CommentsService {
@@ -25,5 +25,15 @@ export class CommentsService {
 
             throw new InternalServerErrorException(e)
         }
+    }
+
+    async remove(commentId: string) {
+        const comment = await this.em.findOne(Comment, {
+            where: {
+                id: commentId
+            }
+        })
+
+        await this.em.remove(comment)
     }
 }
