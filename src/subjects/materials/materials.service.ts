@@ -49,18 +49,12 @@ export class MaterialsService {
 
     async createFile(uploadFileDto: UploadFileDTO, user: User, file: Express.Multer.File) {
         try {
-            console.log("Handling uploaded file.")
-            console.log(uploadFileDto)
-            console.log(user)
-
             const material = this.em.create(Material, {
                 ...uploadFileDto,
                 authorId: user.id,
                 path: file.path,
                 mimetype: file.mimetype
             })
-
-            console.log(material)
 
             await this.em.save(Material, material)
             return material
