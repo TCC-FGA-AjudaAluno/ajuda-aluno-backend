@@ -42,4 +42,9 @@ export class UsersService {
 
         return UserResponseDTO.from(user)
     }
+
+    async updatePoints(user: User, points: number) {
+        user.points += points
+        return this.repo.update(user.id, user)
+    }
 }

@@ -9,5 +9,8 @@ export const AuthUser = createParamDecorator((data: unknown, ctx: ExecutionConte
         throw new UnauthorizedException()
     }
 
+    delete auth.user.password
+    delete auth.user.rank
+
     return auth.user
 })

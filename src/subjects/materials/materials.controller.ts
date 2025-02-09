@@ -6,10 +6,16 @@ import { MaterialsService } from './materials.service';
 import { AuthenticatedRequest } from 'src/users/auth/@types/authenticated-request';
 import { Response as ExpressResponse } from 'express';
 import * as path from 'path'
+import { AuthUser } from 'src/users/auth/auth.decorator';
+import { User } from 'src/users/user.entity';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('materials')
 export class MaterialsController {
-    constructor (private service: MaterialsService) {}
+    constructor (
+        private service: MaterialsService,
+        private userService: UsersService
+    ) {}
 
     @Post('/')
     @UseGuards(AuthGuard)
@@ -19,9 +25,9 @@ export class MaterialsController {
     async create(
         @UploadedFile() file: Express.Multer.File,
         @Body() body: UploadFileDTO,
-        @Request() req: AuthenticatedRequest
+        @AuthUser() user: User
     ) {
-        const user = req.auth.user
+        this.userService.updatePoints(user, 10)
         return this.service.createFile(body, user, file)
     }
 

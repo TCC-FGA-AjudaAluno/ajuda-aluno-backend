@@ -1,5 +1,5 @@
-import { Injectable, UnprocessableEntityException } from "@nestjs/common";
-import { EntityManager, FindManyOptions, FindOneOptions, QueryFailedError } from "typeorm";
+import { Injectable, NotFoundException, UnprocessableEntityException } from "@nestjs/common";
+import { DeepPartial, EntityManager, FindManyOptions, FindOneOptions, QueryFailedError } from "typeorm";
 import { CreateUserDTO } from "./dto/create-user.dto";
 import { User, UserRole } from "./user.entity";
 
@@ -31,6 +31,29 @@ export class UsersRepository {
 
             return user
         } catch (e) {
+            this.catchQueryError(e)
+        }
+    }
+
+    async update(userId: string, user: DeepPartial<User>): Promise<User> {
+        try {
+            const result = await this.manager.update(User, userId, {
+                ...user
+            })
+            if (!result.affected || result.affected < 1) {
+                console.log("foi aqui?")
+                throw new NotFoundException("User not found.")
+            }
+
+            return this.manager.findOne(User, {
+                where: {
+                    id: userId
+                },
+                select: {
+                    password: false
+                }
+            })
+        } catch(e) {
             this.catchQueryError(e)
         }
     }
