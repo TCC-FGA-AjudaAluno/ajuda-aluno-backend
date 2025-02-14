@@ -16,7 +16,6 @@ export class UsersService {
         let salt = await bcrypt.genSalt(10)
         let hashedPass = await bcrypt.hash(data.password, salt)
         data.password = hashedPass
-        console.log("data: ", data);
         return this.repo.create(data)
     }
 

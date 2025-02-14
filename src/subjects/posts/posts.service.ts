@@ -2,10 +2,11 @@ import { HttpException, Injectable, InternalServerErrorException, UnprocessableE
 import { DeepPartial, EntityManager, TypeORMError } from 'typeorm';
 import { CreatePostDTO } from './dto/create-post.dto';
 import { Post } from './posts.entity';
+import { PostListItem } from './dto/post-list-item.dto';
 
 @Injectable()
 export class PostsService {
-    constructor(private em: EntityManager) {}
+    constructor(private em: EntityManager) { }
 
     async create(data: CreatePostDTO) {
         try {
@@ -14,7 +15,7 @@ export class PostsService {
             await this.em.save(Post, post)
 
             return post
-        } catch(e) {
+        } catch (e) {
             if (e instanceof TypeORMError) {
                 console.log(e)
                 throw new UnprocessableEntityException(e)
@@ -24,35 +25,51 @@ export class PostsService {
         }
     }
 
-    async findAll(subjectId: string) {
-        const [posts, postsCount] = await this.em.findAndCount(Post, {
-            where: {
-                subjectId
-            },
-            relations: {
-                author: true
-            },
-            order: {
-                createdAt: "DESC"
-            },
-            select: {
-                id: true,
-                title: true,
-                content: true,
-                createdAt: true,
-                subjectId: true,
-                author: {
-                    name: true,
-                    email: true,
-                    id: true,
-                    registrationNumber: true,
-                    points: false,
-                    rank: false
-                }
-            },
-        })
+    async findPostsWithCommentsCount(): Promise<Array<PostListItem>> {
+        const rawPostsWithComments = await this.em.createQueryBuilder(Post, 'p')
+            .leftJoinAndSelect('p.author', 'author')
+            .leftJoinAndSelect('p.comments', 'c')
+            .select([
+                'p.id as post_id',
+                'p.title as title',
+                'p.createdAt as created_at',
+                'p.content',
+                'author.id as author_id',
+                'author.name',
+                'author.email',
+                'author.registrationNumber as registration_number',
+                'count(c.id) as comments'])
+            .groupBy('post_id')
+            .addGroupBy('title')
+            .addGroupBy('created_at')
+            .addGroupBy('author_id')
+            .addGroupBy('author.name')
+            .addGroupBy('author.email')
+            .addGroupBy('registration_number')
+            .addGroupBy('p.content')
+            .orderBy('created_at', 'DESC')
+            .getRawMany()
 
-        console.log(`Found ${postsCount} ${postsCount > 1 || postsCount === 0 ? 'posts' : 'post'}.`)
+        return rawPostsWithComments.map(item => {
+            const dto = new PostListItem()
+            dto.id = item['post_id']
+            dto.title = item['title']
+            dto.createdAt = item['created_at']
+            dto.content = item['p_content']
+            dto.author = {
+                id: item['author_id'],
+                email: item['author_email'],
+                name: item['author_name'],
+                registrationNumber: item['registration_number']
+            }
+            dto.comments = +item['comments']
+
+            return dto
+        })
+    }
+
+    async findAll(subjectId: string) {
+        const posts = await this.findPostsWithCommentsCount()
         return posts
     }
 
@@ -101,9 +118,9 @@ export class PostsService {
 
             console.log(result)
 
-            const post = await this.em.findOne(Post, {where: {id: postId}})
+            const post = await this.em.findOne(Post, { where: { id: postId } })
             return post
-        } catch(e) {
+        } catch (e) {
             if (e instanceof TypeORMError) {
                 console.log(e)
                 throw new UnprocessableEntityException(e)
