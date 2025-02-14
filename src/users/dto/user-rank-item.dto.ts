@@ -3,4 +3,5 @@ export class UserRankItem {
     name: string
     position: number
     points: number
+    course: string
 }

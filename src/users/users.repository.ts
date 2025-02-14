@@ -20,7 +20,7 @@ export class UsersRepository {
 
     async listUsersByRank(): Promise<Array<UserRankItem>> {
         const result = await this.manager.createQueryBuilder()
-            .select('u.id, u.name, row_number() over()::int as position, u.points')
+            .select('u.id, u.name, row_number() over()::int as position, u.points, u.course')
             .addFrom((qr: SelectQueryBuilder<User>) => {
                 return qr.from(User, 'user')
                     .select('*')
@@ -34,7 +34,8 @@ export class UsersRepository {
                 id: item.id,
                 name: item.name,
                 position: item.position,
-                points: item.points
+                points: item.points,
+                course: item.course
             }
         })
     }
