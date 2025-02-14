@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException, UnprocessableEntityException } from "@nestjs/common";
-import { DeepPartial, EntityManager, FindManyOptions, FindOneOptions, QueryFailedError } from "typeorm";
+import { DeepPartial, EntityManager, FindManyOptions, FindOneOptions, QueryFailedError, SelectQueryBuilder } from "typeorm";
 import { CreateUserDTO } from "./dto/create-user.dto";
 import { User, UserRole } from "./user.entity";
+import { UserRankItem } from "./dto/user-rank-item.dto";
 
 @Injectable()
 export class UsersRepository {
@@ -15,6 +16,22 @@ export class UsersRepository {
                 detail: e['detail']
             })
         }
+    }
+
+    async listUsersByRank(): Promise<Array<UserRankItem>> {
+        const result = await this.manager.createQueryBuilder(User, 'u')
+            .select('u.id, u.name, row_number() over()::int as position, u.points')
+            .orderBy('u.points', 'DESC')
+            .getRawMany()
+        
+        return result.map(item => {
+            return {
+                id: item.id,
+                name: item.name,
+                position: item.position,
+                points: item.points
+            }
+        })
     }
 
     async create(data: CreateUserDTO): Promise<User> {

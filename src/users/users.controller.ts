@@ -36,6 +36,12 @@ export class UsersController {
         return user
     }
 
+    @Get('/rank')
+    @UseGuards(AuthGuard)
+    async usersRank() {
+        return this.service.listUserRanks()
+    }
+
     @UseGuards(AuthGuard)
     @Get(':id')
     async findUser(@Param('id') userId: string) {

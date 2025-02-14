@@ -62,6 +62,11 @@ export class UsersService {
         return UserResponseDTO.from(user)
     }
 
+    async listUserRanks() {
+        const result = await this.repo.listUsersByRank()
+        return result
+    }
+
     async updatePoints(user: User, points: number) {
         user.points += points
         return this.repo.update(user.id, user)
