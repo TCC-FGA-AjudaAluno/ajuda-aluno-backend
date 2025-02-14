@@ -29,8 +29,6 @@ export class UsersRepository {
             .orderBy('u.points', 'DESC')
             .getRawMany()
         
-        console.log(result)
-        
         return result.map(item => {
             return {
                 id: item.id,
