@@ -19,10 +19,17 @@ export class UsersRepository {
     }
 
     async listUsersByRank(): Promise<Array<UserRankItem>> {
-        const result = await this.manager.createQueryBuilder(User, 'u')
+        const result = await this.manager.createQueryBuilder()
             .select('u.id, u.name, row_number() over()::int as position, u.points')
+            .addFrom((qr: SelectQueryBuilder<User>) => {
+                return qr.from(User, 'user')
+                    .select('*')
+                    .orderBy("user.points", 'DESC')
+            }, 'u')
             .orderBy('u.points', 'DESC')
             .getRawMany()
+        
+        console.log(result)
         
         return result.map(item => {
             return {
