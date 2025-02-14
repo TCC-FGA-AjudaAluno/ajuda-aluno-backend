@@ -22,7 +22,7 @@ export class UsersRepository {
             let user = await this.manager.save(User, {
                 course: data.course,
                 email: data.email,
-                enrollDate: new Date(data.enrollDate),
+                enrollDate: new Date(),
                 name: data.name,
                 password: data.password,
                 registrationNumber: data.registrationNumber,
