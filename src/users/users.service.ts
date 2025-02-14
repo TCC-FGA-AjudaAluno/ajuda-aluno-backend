@@ -16,6 +16,7 @@ export class UsersService {
         let salt = await bcrypt.genSalt(10)
         let hashedPass = await bcrypt.hash(data.password, salt)
         data.password = hashedPass
+        console.log("data: ", data);
         return this.repo.create(data)
     }
 
@@ -37,7 +38,26 @@ export class UsersService {
         let user = await this.findOne({
             where: {
                 id: userId
-            }
+            },
+            relations: ['subjects', 'subjects.subject'],
+            select: {
+                id: true,
+                course: true,
+                name: true,
+                email: true,
+                registrationNumber: true,
+                points: true,
+                enrollDate: true,
+                role: true,
+                subjects: {
+                    id: true,
+                    subject: {
+                        id: true,
+                        name: true,
+                        description: true
+                    }
+                }
+            },
         })
 
         return UserResponseDTO.from(user)
