@@ -3,17 +3,19 @@ import { CommentsService } from './comments.service';
 import { CreateCommentDTO } from './dto/create-comment.dto';
 import { AuthGuard } from 'src/users/auth/auth.guard';
 import { AuthenticatedRequest } from 'src/users/auth/@types/authenticated-request';
+import { AuthUser } from 'src/users/auth/auth.decorator';
+import { User } from 'src/users/user.entity';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('comments')
 export class CommentsController {
-    constructor(private service: CommentsService) {}
+    constructor(private service: CommentsService, private userService: UsersService) {}
 
     @UseGuards(AuthGuard)
     @Post('/')
-    async create(@Body() body: CreateCommentDTO, @Request() req: AuthenticatedRequest) {
-        const user = req.auth.user
+    async create(@Body() body: CreateCommentDTO, @AuthUser() user: User) {
+        this.userService.updatePoints(user, 3)
         body.authorId = user.id
-
         return this.service.create(body)
     }
 

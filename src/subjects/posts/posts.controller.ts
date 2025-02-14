@@ -6,10 +6,16 @@ import { PostsService } from './posts.service';
 import { AuthGuard } from 'src/users/auth/auth.guard';
 import { DeepPartial } from 'typeorm';
 import { Post as PostEntity } from './posts.entity';
+import { AuthUser } from 'src/users/auth/auth.decorator';
+import { User } from 'src/users/user.entity';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('subjects/:subjectId/posts')
 export class PostsController {
-    constructor(private service: PostsService) {}
+    constructor(
+        private service: PostsService,
+        private userService: UsersService
+    ) {}
 
     @UseGuards(AuthGuard)
     @Get('/')
@@ -29,10 +35,14 @@ export class PostsController {
 
     @UseGuards(AuthGuard)
     @Post('/')
-    async create(@Body() body: CreatePostRequestDTO, @Param('subjectId') subjectId: string, @Request() req: AuthenticatedRequest) {
+    async create(
+        @Body() body: CreatePostRequestDTO,
+        @Param('subjectId') subjectId: string,
+        @AuthUser() user: User
+    ) {
         console.log('Creating post!')
-        const userToken = req.auth
-        const data = new CreatePostDTO(body, subjectId, userToken.user.id)
+        this.userService.updatePoints(user, 7)
+        const data = new CreatePostDTO(body, subjectId, user.id)
 
         return this.service.create(data)
     }
