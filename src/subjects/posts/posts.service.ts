@@ -25,7 +25,7 @@ export class PostsService {
         }
     }
 
-    async findPostsWithCommentsCount(): Promise<Array<PostListItem>> {
+    async findPostsWithCommentsCount(subjectId: string): Promise<Array<PostListItem>> {
         const rawPostsWithComments = await this.em.createQueryBuilder(Post, 'p')
             .leftJoinAndSelect('p.author', 'author')
             .leftJoinAndSelect('p.comments', 'c')
@@ -39,6 +39,7 @@ export class PostsService {
                 'author.email',
                 'author.registrationNumber as registration_number',
                 'count(c.id) as comments'])
+            .where('p.subjectId = :subject_id', {subject_id: subjectId})
             .groupBy('post_id')
             .addGroupBy('title')
             .addGroupBy('created_at')
@@ -69,7 +70,7 @@ export class PostsService {
     }
 
     async findAll(subjectId: string) {
-        const posts = await this.findPostsWithCommentsCount()
+        const posts = await this.findPostsWithCommentsCount(subjectId)
         return posts
     }
 
