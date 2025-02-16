@@ -4,10 +4,11 @@ import { EntityManager } from 'typeorm';
 import { Todo } from './todos.entity';
 import { CreateTodoDTO } from './dto/create-todo.dto';
 import { UpdateTodoDTO } from './dto/update-todo.dto';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class TodosService {
-    constructor(private em: EntityManager) {}
+    constructor(private em: EntityManager, private usersService: UsersService) {}
 
     async listUserTodos(userId: string) {
         const result = await this.em.find(Todo, {
@@ -39,7 +40,8 @@ export class TodosService {
                 user: {
                     id: true,
                     name: true,
-                    email: true
+                    email: true,
+                    points: true
                 }
             }
         })
@@ -48,7 +50,13 @@ export class TodosService {
     }
 
     async updateTodo(todoId: string, data: UpdateTodoDTO) {
+        const todoBefore = await this.getTodo(todoId)
+        const now = new Date()
+        if (data.done && !todoBefore.done && (todoBefore.dueDate >= now)) {
+            this.usersService.updatePoints(todoBefore.user, 5)
+        }
         const updateResult = await this.em.update(Todo, todoId, data)
+        console.log(updateResult)
         return this.getTodo(todoId)
     }
 
