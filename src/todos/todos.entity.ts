@@ -12,8 +12,8 @@ export class Todo {
     @Column({nullable: true})
     description?: string
 
-    @Column()
-    dueDate: Date
+    @Column({nullable: true})
+    dueDate?: Date
 
     @CreateDateColumn()
     createdAt: Date
