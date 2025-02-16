@@ -16,6 +16,8 @@ import { UsersModule } from './users/users.module';
 import { Comment } from './subjects/posts/comments/comments.entity';
 import { Material } from './subjects/materials/materials.entity';
 import { Todo } from './todos/todos.entity';
+import { EventsModule } from './events/events.module';
+import { EventEntity } from './events/entities/event.entity';
 
 @Module({
   imports: [
@@ -26,14 +28,15 @@ import { Todo } from './todos/todos.entity';
       username: 'application',
       password: 'application',
       database: 'application',
-      entities: [User, Token, Info, Subject, Enrollment, Post, Comment, Material, Todo],
+      entities: [User, Token, Info, Subject, Enrollment, Post, Comment, Material, Todo, EventEntity],
       synchronize: true
     }),
     ScheduleModule.forRoot(),
     SubjectsModule,
     InfosModule,
     TodosModule,
-    UsersModule
+    UsersModule,
+    EventsModule
   ],
   controllers: [AppController],
   providers: [AppService],
