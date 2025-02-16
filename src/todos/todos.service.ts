@@ -20,6 +20,7 @@ export class TodosService {
                 done: true,
                 id: true,
                 title: true,
+                description: true,
                 dueDate: true
             },
             order: {
