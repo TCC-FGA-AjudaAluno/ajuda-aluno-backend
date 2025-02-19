@@ -1,7 +1,7 @@
 export class EnrollStudentDTO {
     userId: string
     subjectId: string
-    period: string
+    period?: string
 }
 
 export class EnrollmentResultDTO {

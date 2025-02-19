@@ -58,7 +58,7 @@ export class SubjectsService {
             throw new NotFoundException('User or Subject not found.')
         }
 
-        enrollment.period = data.period
+        enrollment.period = new Date().toISOString()
         enrollment.user = user
         enrollment.subject = subject
 
