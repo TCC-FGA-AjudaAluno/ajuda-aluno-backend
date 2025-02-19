@@ -10,4 +10,7 @@ export class PostListItem {
         registrationNumber: string
     }
     comments: number
+    vote?: string
+    upvotes: number
+    downvotes: number
 }

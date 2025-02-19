@@ -3,6 +3,8 @@ import { DeepPartial, EntityManager, TypeORMError } from 'typeorm';
 import { CreatePostDTO } from './dto/create-post.dto';
 import { Post } from './posts.entity';
 import { PostListItem } from './dto/post-list-item.dto';
+import { Comment } from './comments/comments.entity';
+import { Vote } from 'src/votes/vote.entity';
 
 @Injectable()
 export class PostsService {
@@ -23,6 +25,72 @@ export class PostsService {
 
             throw new InternalServerErrorException('Unexpected Error.')
         }
+    }
+
+    async findPostsWithCommentsAndVoteCount(subjectId: string, userId: string): Promise<Array<PostListItem>> {
+        /**
+         * Receives the subject the posts belong to, and the user requesting the resource to find the votes.
+         */
+
+        const rawResult = await this.em.createQueryBuilder()
+            .select(`
+                p.id,
+                p.title,
+                p.content,
+                p."createdAt",
+                p."authorId",
+                u.name as author,
+                u.email,
+                u.registrationNumber,
+                uv.vote,
+                coalesce(c.comments, 0)::int as comments,
+                coalesce(v.upvotes, 0)::int as upvotes,
+                coalesce(v.downvotes, 0)::int as downvotes
+            `)
+            .from(Post, 'p')
+            .leftJoin('p.author', 'u') // join users
+            .leftJoin(q => {
+                return q.select('c."postId", count(*)::int as comments')
+                    .from(Comment, 'c')
+                    .groupBy('c."postId"')
+            }, 'c', 'c."postId" = p.id') // join comment count
+            .leftJoin(q => {
+                return q.select([
+                        'v."postId"',
+                        "count(v.id) filter (where v.vote = 'UPVOTE')::int as upvotes",
+                        "count(v.id) filter (where v.vote = 'DOWNVOTE')::int as downvotes"
+                    ])
+                    .from(Vote, 'v')
+                    .groupBy('v."postId"')
+            }, 'v', 'v."postId" = p.id') // join votes to get count
+            .leftJoin(q => {
+                return q.select()
+                    .from(Vote, 'v')
+                    .where('v."userId" = :userId', {userId})
+            }, 'uv', 'uv."postId" = p.id') // join votes that user did
+            .where('p."subjectId" = :subjectId', {subjectId})
+            .orderBy('p."createdAt"', 'DESC')
+            .addOrderBy('v.upvotes', 'DESC')
+            .getRawMany()
+
+        return rawResult.map(i => {
+            return {
+                id: i.id,
+                title: i.title,
+                content: i.content,
+                createdAt: i.createdAt,
+                author: {
+                    id: i.authorId,
+                    name: i.author,
+                    email: i.email,
+                    registrationNumber: i.registrationNumber
+                },
+                vote: i.vote,
+                comments: i.comments,
+                upvotes: i.upvotes,
+                downvotes: i.downvotes
+            }
+        })
     }
 
     async findPostsWithCommentsCount(subjectId: string): Promise<Array<PostListItem>> {
@@ -69,8 +137,9 @@ export class PostsService {
         })
     }
 
-    async findAll(subjectId: string) {
-        const posts = await this.findPostsWithCommentsCount(subjectId)
+    async findAll(subjectId: string, userId: string) {
+        const posts = await this.findPostsWithCommentsAndVoteCount(subjectId, userId)
+        // const posts = await this.findPostsWithCommentsCount(subjectId)
         return posts
     }
 

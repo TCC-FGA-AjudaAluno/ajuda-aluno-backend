@@ -19,9 +19,9 @@ export class PostsController {
 
     @UseGuards(AuthGuard)
     @Get('/')
-    async findAll(@Param('subjectId') subjectId: string) {
+    async findAll(@Param('subjectId') subjectId: string, @AuthUser() user: User) {
         console.log(`Retrieving posts for subject: ${subjectId}`)
-        const posts = await this.service.findAll(subjectId)
+        const posts = await this.service.findAll(subjectId, user.id)
         return posts
     }
 
