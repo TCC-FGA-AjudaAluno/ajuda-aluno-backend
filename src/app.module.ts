@@ -15,6 +15,7 @@ import { User } from './users/user.entity';
 import { UsersModule } from './users/users.module';
 import { Comment } from './subjects/posts/comments/comments.entity';
 import { Material } from './subjects/materials/materials.entity';
+import { ChatModule } from './subjects/chat/chat.module';
 
 @Module({
   imports: [
@@ -32,7 +33,8 @@ import { Material } from './subjects/materials/materials.entity';
     SubjectsModule,
     InfosModule,
     TodosModule,
-    UsersModule
+    UsersModule,
+    ChatModule
   ],
   controllers: [AppController],
   providers: [AppService],
