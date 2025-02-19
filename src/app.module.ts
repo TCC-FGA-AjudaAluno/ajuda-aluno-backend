@@ -18,6 +18,8 @@ import { Material } from './subjects/materials/materials.entity';
 import { Todo } from './todos/todos.entity';
 import { EventsModule } from './events/events.module';
 import { EventEntity } from './events/entities/event.entity';
+import { VotesModule } from './votes/votes.module';
+import { Vote } from './votes/vote.entity';
 
 @Module({
   imports: [
@@ -28,7 +30,7 @@ import { EventEntity } from './events/entities/event.entity';
       username: 'application',
       password: 'application',
       database: 'application',
-      entities: [User, Token, Info, Subject, Enrollment, Post, Comment, Material, Todo, EventEntity],
+      entities: [User, Token, Info, Subject, Enrollment, Post, Comment, Material, Todo, EventEntity, Vote],
       synchronize: true
     }),
     ScheduleModule.forRoot(),
@@ -36,7 +38,8 @@ import { EventEntity } from './events/entities/event.entity';
     InfosModule,
     TodosModule,
     UsersModule,
-    EventsModule
+    EventsModule,
+    VotesModule
   ],
   controllers: [AppController],
   providers: [AppService],
