@@ -53,7 +53,7 @@ export class TodosService {
     async updateTodo(todoId: string, data: UpdateTodoDTO) {
         const todoBefore = await this.getTodo(todoId)
         const now = new Date()
-        if (data.done && !todoBefore.done && (todoBefore.dueDate >= now)) {
+        if (data.done && !todoBefore.done) {
             this.usersService.updatePoints(todoBefore.user, 5)
         }
         const updateResult = await this.em.update(Todo, todoId, data)
