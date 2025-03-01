@@ -20,6 +20,7 @@ import { EventsModule } from './events/events.module';
 import { EventEntity } from './events/entities/event.entity';
 import { VotesModule } from './votes/votes.module';
 import { Vote } from './votes/vote.entity';
+import { AchievementsModule } from './achievements/achievements.module';
 
 @Module({
   imports: [
@@ -39,7 +40,8 @@ import { Vote } from './votes/vote.entity';
     TodosModule,
     UsersModule,
     EventsModule,
-    VotesModule
+    VotesModule,
+    AchievementsModule
   ],
   controllers: [AppController],
   providers: [AppService],
