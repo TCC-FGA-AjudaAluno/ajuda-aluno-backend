@@ -1,10 +1,10 @@
-import { Logger, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { PostgresModule } from 'src/database/postgres/postgres.module';
-import { Seeder } from './seeder';
 import { AchievementsSeederModule } from './achievements/achievements.module';
+import { Seeder } from './seeder';
 
 @Module({
     imports: [PostgresModule, AchievementsSeederModule],
-    providers: [Seeder, Logger]
+    providers: [Seeder]
 })
 export class SeederModule {}
