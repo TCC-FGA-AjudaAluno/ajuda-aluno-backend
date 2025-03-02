@@ -7,16 +7,26 @@ import { Comment } from './comments/comments.entity';
 import { Vote } from 'src/votes/vote.entity';
 import { CommentListItem } from './dto/comment-list-item.dto';
 import { PostWithCommentsDTO } from './dto/post-with-comments.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { NewPostEvent } from './events/new-post.event';
 
 @Injectable()
 export class PostsService {
-    constructor(private em: EntityManager) { }
+    constructor(
+        private em: EntityManager,
+        private emitter: EventEmitter2
+    ) { }
 
     async create(data: CreatePostDTO) {
         try {
             const post = this.em.create(Post, data)
             post.authorId = data.userId
             await this.em.save(Post, post)
+
+            if (post.id) {
+                const event = new NewPostEvent(post.id, data.userId)
+                this.emitter.emit('posts.newPost', event)
+            }
 
             return post
         } catch (e) {
