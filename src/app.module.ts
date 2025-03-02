@@ -22,7 +22,7 @@ import { VotesModule } from './votes/votes.module';
 import { Vote } from './votes/vote.entity';
 import { AchievementsModule } from './achievements/achievements.module';
 import { Achievement } from './achievements/entities/achievement.entity';
-import { SeederModule } from './seeder/seeder.module';
+import { SeederModule } from './database/seeder/seeder.module';
 import { PostgresModule } from './database/postgres/postgres.module';
 
 @Module({
