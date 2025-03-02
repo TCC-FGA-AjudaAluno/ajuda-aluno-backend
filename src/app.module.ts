@@ -21,19 +21,12 @@ import { EventEntity } from './events/entities/event.entity';
 import { VotesModule } from './votes/votes.module';
 import { Vote } from './votes/vote.entity';
 import { AchievementsModule } from './achievements/achievements.module';
+import { Achievement } from './achievements/entities/achievement.entity';
+import { SeederModule } from './seeder/seeder.module';
+import { PostgresModule } from './database/postgres/postgres.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'application',
-      password: 'application',
-      database: 'application',
-      entities: [User, Token, Info, Subject, Enrollment, Post, Comment, Material, Todo, EventEntity, Vote],
-      synchronize: true
-    }),
     ScheduleModule.forRoot(),
     SubjectsModule,
     InfosModule,
@@ -41,7 +34,9 @@ import { AchievementsModule } from './achievements/achievements.module';
     UsersModule,
     EventsModule,
     VotesModule,
-    AchievementsModule
+    AchievementsModule,
+    SeederModule,
+    PostgresModule
   ],
   controllers: [AppController],
   providers: [AppService],

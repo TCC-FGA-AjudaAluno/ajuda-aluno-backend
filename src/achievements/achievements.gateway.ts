@@ -21,7 +21,7 @@ export class AchievementsGateway {
   }
 
   constructor() {
-    this.simulateAchievementUnlock();
+    // this.simulateAchievementUnlock();
   }
 
   // Método para disparar achievement manualmente (pode ser chamado por outros serviços)
@@ -33,6 +33,14 @@ export class AchievementsGateway {
   @SubscribeMessage('message')
   handleMessage(@MessageBody() message: string) {
     console.log('Mensagem recebida:', message);
+    if (message.includes('achievementUnlock')) {
+      this.sendAchievement({
+        //id: Math.floor(Math.random() * 1000),
+        id: 1,
+        title: "Novo Achievement 🎉",
+        description: "Você desbloqueou um novo desafio!",
+      })
+    }
     return { message: 'Mensagem recebida pelo servidor!' };
   }
 }
