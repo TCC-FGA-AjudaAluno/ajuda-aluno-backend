@@ -7,9 +7,10 @@ import { AchievementsController } from './achievements.controller';
 import { AuthModule } from 'src/users/auth/auth.module';
 import { PostAchievementsLister } from './listeners/post-achievements.listener';
 import { UsersModule } from 'src/users/users.module';
+import { PointsAchievementsListener } from './listeners/points-achievements.listener';
 
 @Module({
-  providers: [AchievementsGateway, AchievementsService, PostAchievementsLister],
+  providers: [AchievementsGateway, AchievementsService, PostAchievementsLister, PointsAchievementsListener],
   exports: [AchievementsGateway],
   imports: [
     TypeOrmModule.forFeature([Achievement]),

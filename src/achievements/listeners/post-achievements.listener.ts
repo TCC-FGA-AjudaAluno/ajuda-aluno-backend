@@ -115,7 +115,7 @@ export class PostAchievementsLister {
             })
         )
         const unlocked = result.filter(item => item.valid).map(item => item.code)
-        console.log(unlocked)
+        this.logger.log(unlocked)
         const granted = await Promise.all(unlocked.map(async item => {
             const result = await this.service.addAchievement(item, event.authorId)
             return result
