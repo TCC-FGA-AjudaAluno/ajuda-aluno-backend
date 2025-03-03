@@ -43,7 +43,7 @@ export class UsersService {
             where: {
                 id: userId
             },
-            relations: ['subjects', 'subjects.subject'],
+            relations: ['subjects', 'subjects.subject', 'achievements'],
             select: {
                 id: true,
                 course: true,
@@ -60,6 +60,10 @@ export class UsersService {
                         name: true,
                         description: true
                     }
+                },
+                achievements: {
+                    id: true,
+                    title: true
                 }
             },
         })
