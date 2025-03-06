@@ -20,6 +20,7 @@ import { EventsModule } from './events/events.module';
 import { EventEntity } from './events/entities/event.entity';
 import { VotesModule } from './votes/votes.module';
 import { Vote } from './votes/vote.entity';
+import { ChatModule } from './subjects/chat/chat.module';
 
 @Module({
   imports: [
@@ -38,8 +39,12 @@ import { Vote } from './votes/vote.entity';
     InfosModule,
     TodosModule,
     UsersModule,
+<<<<<<< HEAD
     EventsModule,
     VotesModule
+=======
+    ChatModule
+>>>>>>> main
   ],
   controllers: [AppController],
   providers: [AppService],
