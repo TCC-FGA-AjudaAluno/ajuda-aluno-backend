@@ -6,33 +6,43 @@ import { PostsService } from './posts.service';
 import { AuthGuard } from 'src/users/auth/auth.guard';
 import { DeepPartial } from 'typeorm';
 import { Post as PostEntity } from './posts.entity';
+import { AuthUser } from 'src/users/auth/auth.decorator';
+import { User } from 'src/users/user.entity';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('subjects/:subjectId/posts')
 export class PostsController {
-    constructor(private service: PostsService) {}
+    constructor(
+        private service: PostsService,
+        private userService: UsersService
+    ) {}
 
     @UseGuards(AuthGuard)
     @Get('/')
-    async findAll(@Param('subjectId') subjectId: string) {
+    async findAll(@Param('subjectId') subjectId: string, @AuthUser() user: User) {
         console.log(`Retrieving posts for subject: ${subjectId}`)
-        const posts = await this.service.findAll(subjectId)
+        const posts = await this.service.findAll(subjectId, user.id)
         return posts
     }
 
     @UseGuards(AuthGuard)
     @Get('/:postId')
-    async findOne(@Param('postId') postId: string) {
-        const result = await this.service.findOne(postId)
+    async findOne(@Param('postId') postId: string, @AuthUser() user: User) {
+        const result = await this.service.findOne(postId, user.id)
 
         return result
     }
 
     @UseGuards(AuthGuard)
     @Post('/')
-    async create(@Body() body: CreatePostRequestDTO, @Param('subjectId') subjectId: string, @Request() req: AuthenticatedRequest) {
+    async create(
+        @Body() body: CreatePostRequestDTO,
+        @Param('subjectId') subjectId: string,
+        @AuthUser() user: User
+    ) {
         console.log('Creating post!')
-        const userToken = req.auth
-        const data = new CreatePostDTO(body, subjectId, userToken.user.id)
+        this.userService.updatePoints(user, 7)
+        const data = new CreatePostDTO(body, subjectId, user.id)
 
         return this.service.create(data)
     }

@@ -1,39 +1,30 @@
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { Info } from './infos/infos.entity';
 import { InfosModule } from './infos/infos.module';
-import { Enrollment } from './subjects/entities/enrollment.entity';
-import { Subject } from './subjects/entities/subjects.entity';
-import { Post } from './subjects/posts/posts.entity';
 import { SubjectsModule } from './subjects/subjects.module';
 import { TodosModule } from './todos/todos.module';
-import { Token } from './users/auth/token.entity';
-import { User } from './users/user.entity';
 import { UsersModule } from './users/users.module';
-import { Comment } from './subjects/posts/comments/comments.entity';
-import { Material } from './subjects/materials/materials.entity';
+import { EventsModule } from './events/events.module';
+import { VotesModule } from './votes/votes.module';
+import { AchievementsModule } from './achievements/achievements.module';
+import { PostgresModule } from './database/postgres/postgres.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ChatModule } from './subjects/chat/chat.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'application',
-      password: 'application',
-      database: 'application',
-      entities: [User, Token, Info, Subject, Enrollment, Post, Comment, Material],
-      synchronize: true
-    }),
+    EventEmitterModule.forRoot(),
     ScheduleModule.forRoot(),
     SubjectsModule,
     InfosModule,
     TodosModule,
     UsersModule,
+    EventsModule,
+    VotesModule,
+    AchievementsModule,
+    PostgresModule,
     ChatModule
   ],
   controllers: [AppController],

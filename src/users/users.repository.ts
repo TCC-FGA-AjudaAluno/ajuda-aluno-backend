@@ -1,7 +1,8 @@
-import { Injectable, UnprocessableEntityException } from "@nestjs/common";
-import { EntityManager, FindManyOptions, FindOneOptions, QueryFailedError } from "typeorm";
+import { Injectable, NotFoundException, UnprocessableEntityException } from "@nestjs/common";
+import { DeepPartial, EntityManager, FindManyOptions, FindOneOptions, QueryFailedError, SelectQueryBuilder } from "typeorm";
 import { CreateUserDTO } from "./dto/create-user.dto";
 import { User, UserRole } from "./user.entity";
+import { UserRankItem } from "./dto/user-rank-item.dto";
 
 @Injectable()
 export class UsersRepository {
@@ -15,6 +16,28 @@ export class UsersRepository {
                 detail: e['detail']
             })
         }
+    }
+
+    async listUsersByRank(): Promise<Array<UserRankItem>> {
+        const result = await this.manager.createQueryBuilder()
+            .select('u.id, u.name, row_number() over()::int as position, u.points, u.course')
+            .addFrom((qr: SelectQueryBuilder<User>) => {
+                return qr.from(User, 'user')
+                    .select('*')
+                    .orderBy("user.points", 'DESC')
+            }, 'u')
+            .orderBy('u.points', 'DESC')
+            .getRawMany()
+        
+        return result.map(item => {
+            return {
+                id: item.id,
+                name: item.name,
+                position: item.position,
+                points: item.points,
+                course: item.course
+            }
+        })
     }
 
     async create(data: CreateUserDTO): Promise<User> {
@@ -31,6 +54,29 @@ export class UsersRepository {
 
             return user
         } catch (e) {
+            this.catchQueryError(e)
+        }
+    }
+
+    async update(userId: string, user: DeepPartial<User>): Promise<User> {
+        try {
+            const result = await this.manager.update(User, userId, {
+                ...user
+            })
+            if (!result.affected || result.affected < 1) {
+                console.log("foi aqui?")
+                throw new NotFoundException("User not found.")
+            }
+
+            return this.manager.findOne(User, {
+                where: {
+                    id: userId
+                },
+                select: {
+                    password: false
+                }
+            })
+        } catch(e) {
             this.catchQueryError(e)
         }
     }

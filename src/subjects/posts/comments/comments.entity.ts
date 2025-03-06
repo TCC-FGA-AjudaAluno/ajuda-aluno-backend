@@ -1,6 +1,7 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm"
 import { Post } from "../posts.entity"
 import { User } from "src/users/user.entity"
+import { Vote } from "src/votes/vote.entity"
 
 @Entity()
 export class Comment {
@@ -26,4 +27,7 @@ export class Comment {
     @ManyToOne(() => User)
     @JoinColumn({name: 'authorId'})
     author: User
+
+    @OneToMany(() => Vote, vote => vote.comment)
+    votes: Array<Vote>
 }
