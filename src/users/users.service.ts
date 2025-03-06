@@ -6,10 +6,15 @@ import { FindOneOptions } from 'typeorm';
 import { User } from './user.entity';
 import { UUID } from 'typeorm/driver/mongodb/bson.typings';
 import { UserResponseDTO } from './dto/response-user.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { IncreasePointsEvent } from './events/increase-points.event';
 
 @Injectable()
 export class UsersService {
-    constructor(private repo: UsersRepository) { }
+    constructor(
+        private repo: UsersRepository,
+        private emitter: EventEmitter2
+    ) { }
 
     async create(data: CreateUserDTO) {
         delete data.passwordConfirmation
@@ -38,7 +43,7 @@ export class UsersService {
             where: {
                 id: userId
             },
-            relations: ['subjects', 'subjects.subject'],
+            relations: ['subjects', 'subjects.subject', 'achievements'],
             select: {
                 id: true,
                 course: true,
@@ -55,6 +60,10 @@ export class UsersService {
                         name: true,
                         description: true
                     }
+                },
+                achievements: {
+                    id: true,
+                    title: true
                 }
             },
         })
@@ -69,6 +78,10 @@ export class UsersService {
 
     async updatePoints(user: User, points: number) {
         user.points += points
-        return this.repo.update(user.id, user)
+        const result = await this.repo.update(user.id, user)
+        if (result) {
+            this.emitter.emit('points.increase', new IncreasePointsEvent(user.id, points))
+        }
+        return result
     }
 }

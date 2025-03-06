@@ -27,8 +27,8 @@ export class PostsController {
 
     @UseGuards(AuthGuard)
     @Get('/:postId')
-    async findOne(@Param('postId') postId: string) {
-        const result = await this.service.findOne(postId)
+    async findOne(@Param('postId') postId: string, @AuthUser() user: User) {
+        const result = await this.service.findOne(postId, user.id)
 
         return result
     }

@@ -5,16 +5,28 @@ import { Post } from './posts.entity';
 import { PostListItem } from './dto/post-list-item.dto';
 import { Comment } from './comments/comments.entity';
 import { Vote } from 'src/votes/vote.entity';
+import { CommentListItem } from './dto/comment-list-item.dto';
+import { PostWithCommentsDTO } from './dto/post-with-comments.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { NewPostEvent } from './events/new-post.event';
 
 @Injectable()
 export class PostsService {
-    constructor(private em: EntityManager) { }
+    constructor(
+        private em: EntityManager,
+        private emitter: EventEmitter2
+    ) { }
 
     async create(data: CreatePostDTO) {
         try {
             const post = this.em.create(Post, data)
             post.authorId = data.userId
             await this.em.save(Post, post)
+
+            if (post.id) {
+                const event = new NewPostEvent(post.id, data.userId)
+                this.emitter.emit('posts.newPost', event)
+            }
 
             return post
         } catch (e) {
@@ -143,12 +155,60 @@ export class PostsService {
         return posts
     }
 
-    async findOne(postId: string) {
+    async findPostCommentsWithVotes(postId: string, userId: string): Promise<CommentListItem[]> {
+        const result = await this.em.createQueryBuilder(Comment, 'c')
+            .select(`
+                c.id,
+                c.content,
+                c."createdAt",
+                c."authorId",
+                u.name as "authorName",
+                v.vote,
+                coalesce(v2.upvotes, 0)::int as upvotes,
+                coalesce(v2.downvotes, 0)::int as downvotes
+            `)
+            .leftJoin('c.author', 'u') // join with authors
+            .leftJoin(q => {
+                return q.from(Vote, 'v')
+                    .select()
+                    .where('v.userId = :userId', {userId})
+            }, 'v', 'v."commentId" = c.id') // getting what comments the user liked
+            .leftJoin(q => {
+                return q.from(Vote, 'v')
+                    .select([
+                        'v."commentId"',
+                        "count(v.id) filter (where v.vote = 'UPVOTE')::int as upvotes",
+                        "count(v.id) filter (where v.vote = 'DOWNVOTE')::int as downvotes",
+                    ])
+                    .groupBy('v."commentId"')
+            }, 'v2', 'v2."commentId" = c.id') // get upvotes and downvotes count
+            .where('c."postId" = :postId', {postId})
+            .orderBy('c."createdAt"', 'DESC')
+            .addOrderBy('v2.upvotes', 'DESC')
+            .getRawMany()
+
+        return result.map(i => {
+            return {
+                id: i.id,
+                content: i.content,
+                author: {
+                    id: i.authorId,
+                    name: i.authorName
+                },
+                vote: i.vote,
+                upvotes: i.upvotes,
+                downvotes: i.downvotes,
+                createdAt: i.createdAt
+            }
+        })
+    }
+
+    async findOne(postId: string, userId: string): Promise<PostWithCommentsDTO> {
         const result = await this.em.findOne(Post, {
             where: {
                 id: postId
             },
-            relations: ['author', 'comments', 'comments.author'],
+            relations: ['author'],
             select: {
                 id: true,
                 title: true,
@@ -160,26 +220,16 @@ export class PostsService {
                     email: true,
                     id: true,
                     registrationNumber: true
-                },
-                comments: {
-                    id: true,
-                    content: true,
-                    createdAt: true,
-                    author: {
-                        id: true,
-                        name: true
-                    }
                 }
-            },
-            order: {
-                createdAt: 'DESC',
-                comments: {
-                    createdAt: 'DESC'
-                },
             }
         })
 
-        return result
+        const commentsWithVotes = await this.findPostCommentsWithVotes(postId, userId)
+
+        return {
+            ...result,
+            comments: commentsWithVotes
+        }
     }
 
     async update(postId: string, data: DeepPartial<Post>) {
