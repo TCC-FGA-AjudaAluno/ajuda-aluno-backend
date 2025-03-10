@@ -1,0 +1,77 @@
+@startuml
+top to bottom direction
+skinparam defaultTextAlignment center
+skinparam linetype ortho
+title "Arquitetura Backend"
+
+node App {
+    package Users {
+        together {
+            component UserController
+            component UserService
+            component UserEntity
+        }
+
+        package Auth {
+            [AuthController]
+            [AuthGuard]
+            [AuthService]
+
+            AuthService ..> UserService
+        }
+    }
+
+    package Todos {
+        [TodoController]
+        [TodoService]
+        [TodoEntity]
+    }
+
+    package Events {
+        [EventsController]
+        [EventsService]
+        [EventEntity]
+    }
+
+
+    package Subjects {
+        together {
+            [SubjectController]
+            [SubjectService]
+            [SubjectEntity]
+        }
+
+        package Materials {
+            [MaterialController]
+            [MaterialService]
+            [MaterialEntity]
+        }
+
+        package Posts {
+            [PostsController]
+            [PostsService]
+            [PostsEntity]
+
+            package Comments {
+                [CommentsController]
+                [CommentsService]
+                [CommentEntity]
+            }
+        }
+    }
+
+    package Achievements {
+        [AchievementsWsGateway]
+        [AchievementsService]
+        package Listener {
+            [EventListers]
+        }
+    }
+}
+
+database DB
+
+App -- DB
+HTTP -- App
+WS -left- App
+@enduml

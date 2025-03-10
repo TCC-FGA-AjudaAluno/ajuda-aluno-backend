@@ -1,0 +1,22 @@
+@startuml sequence_achievements
+actor Client
+participant "API Controller" as api
+
+
+Client -> api : Realiza ação que gera conquista
+api -> Service : Invoca service
+Service -> Service : Realiza processamento
+Service -> api : Response
+api -> Client : Response
+
+newpage Verificando Conquista
+
+Service --> EventListener : Emite evento da ação realizada
+EventListener -> CriteriaChain : Envia dados da ação pra verificação
+CriteriaChain -> CriteriaChain : Avalia critérios da conquista
+EventListener <- CriteriaChain : Resultado da Avliação
+
+EventListener -->  EventListener: Registra conquista desbloqueada
+EventListener -> WsGateway : Notifica WebSocket Gateway
+WsGateway --> Client : Notifica o client da nova conquista
+@enduml
