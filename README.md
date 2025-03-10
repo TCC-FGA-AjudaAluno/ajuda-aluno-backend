@@ -1,85 +1,129 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Trabalho de conclusão de curso - AjudaAluno
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+# AjudaAluno Backend
 
-## Description
+![Badge de Licença](https://img.shields.io/github/license/TCC-FGA-AjudaAluno/ajuda-aluno-frontend)
+![Badge de Versão](https://img.shields.io/badge/vers%C3%A3o-1.0.0-blue)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Índice
 
-## Project setup
+- [Sobre o Projeto](#sobre-o-projeto)
+- [Funcionalidades](#funcionalidades)
+- [Pré-requisitos](#pré-requisitos)
+- [Instalação](#instalação)
+- [Como Usar](#como-usar)
+- [Estrutura de Pastas](#estrutura-de-pastas)
+- [Tecnologias Utilizadas](#tecnologias-utilizadas)
+- [Contribuição](#contribuição)
+- [Licença](#licença)
+
+
+## Sobre o Projeto
+
+O **AjudaAluno Backend** é a API Rest que serve como backend para o projeto AjudaAluno, desenvolvido como parte do trabalho de conclusão de curso da FGA. O objetivo do projeto é fornecer uma plataforma que auxilie alunos em suas jornadas acadêmicas, oferecendo recursos como gestão de tarefas, fórum de discussões e acompanhamento de desempenho.
+
+## Funcionalidades
+
+- **Gestão de Tarefas:** Permite que os alunos criem, editem e acompanhem suas tarefas acadêmicas.
+- **Fórum de Discussões:** Espaço para interação entre alunos e professores, promovendo debates e esclarecimento de dúvidas.
+- **Acompanhamento de Desempenho:** Visualização de métricas e estatísticas sobre o progresso acadêmico do aluno.
+
+## Pré-requisitos
+
+Antes de começar, certifique-se de ter instalado em sua máquina:
+
+- [Node.js](https://nodejs.org/) (versão 22 ou superior)
+- [npm](https://www.npmjs.com/)
+- [docker](https://www.docker.com/)
+
+> Obs.: Para utilizar a funcionalidade de chat, é necessário uma API Key de acesso à [API OpenAI](https://platform.openai.com/docs/overview)
+
+## Instalação
+
+1. Clone o repositório:
+
+   ```bash
+   git clone https://github.com/TCC-FGA-AjudaAluno/ajuda-aluno-backend.git
+   ```
+
+2. Navegue até o diretório do projeto:
+
+   ```bash
+   cd ajuda-aluno-backend
+   ```
+
+3. Crie o arquivo de configuração:
+
+    ```bash
+    touch .env
+    ```
+
+4. No arquivo criado, coloque as variáveis de ambiente necessárias para o projeto:
+
+    ```bash
+    OPENAI_API_KEY="<API KEY>"
+    DB_HOST=localhost
+    DB_PORT=5432
+    DB_NAME=application
+    DB_USER=application
+    DB_PASS=application
+    ```
+
+## Como Usar
+
+Para iniciar a aplicação, utilize o docker compose para executar o projeto:
 
 ```bash
-$ npm install
+docker compose up
 ```
 
-## Compile and run the project
+A aplicação será acessível no caminho: `http://localhost:3000`.
 
-```bash
-# development
-$ npm run start
+## Estrutura de Pastas
 
-# watch mode
-$ npm run start:dev
+A estrutura de pastas do projeto é organizada da seguinte forma:
 
-# production mode
-$ npm run start:prod
+```
+ajuda-aluno-backend/
+├── docs/
+│   └── ...
+├── src/
+│   ├── achievements/
+│   ├── database/
+│   ├── users/
+│   └── ...
+├── .env
+├── .gitignore
+├── README.md
+└── package.json
 ```
 
-## Run tests
+- **docs/**: Arquivos contendo diagramas de documentação do projeto.
+- **src/**: Diretório principal do código-fonte. Contém os módulos do projeto separados em diretórios.
+- **.gitignore**: Lista de arquivos e pastas ignorados pelo Git.
+- **README.md**: Documentação do projeto.
+- **package.json**: Arquivo de configuração do npm/yarn.
 
-```bash
-# unit tests
-$ npm run test
+> *Nota: A estrutura de pastas pode variar conforme a necessidade do projeto. É importante mantê-la organizada para facilitar a manutenção e escalabilidade.*
 
-# e2e tests
-$ npm run test:e2e
+## Tecnologias Utilizadas
 
-# test coverage
-$ npm run test:cov
-```
+- [NestJS](https://docs.nestjs.com/)
+- [TypeScript](https://www.typescriptlang.org/)
 
-## Resources
+## Contribuição
 
-Check out a few resources that may come in handy when working with NestJS:
+Contribuições são bem-vindas! Se você deseja contribuir com este projeto, siga os passos abaixo:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+1. Faça um fork do repositório.
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`).
+3. Commit suas alterações (`git commit -m 'Adiciona nova feature'`).
+4. Faça o push para a branch (`git push origin feature/nova-feature`).
+5. Abra um Pull Request.
 
-## Support
+## Licença
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Este projeto está licenciado sob a licença MIT. Consulte o arquivo [LICENSE](LICENSE) para mais informações.
 
-## Stay in touch
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).

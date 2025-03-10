@@ -16,11 +16,11 @@ import { Comment } from 'src/subjects/posts/comments/comments.entity';
 @Module({
     imports: [TypeOrmModule.forRoot({
         type: 'postgres',
-        host: 'localhost',
-        port: 5432,
-        username: 'application',
-        password: 'application',
-        database: 'application',
+        host: process.env.DB_HOST ?? 'localhost',
+        port: parseInt(process.env.DB_PORT) ?? 5432,
+        username: process.env.DB_USER ?? 'application',
+        password: process.env.DB_PASS ?? 'application',
+        database: process.env.DB_NAME ?? 'application',
         entities: [User, Token, Info, Subject, Enrollment, Post, Comment, Material, Todo, EventEntity, Vote, Achievement],
         synchronize: true
     })]
