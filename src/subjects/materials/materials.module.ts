@@ -4,10 +4,11 @@ import { MaterialsService } from './materials.service';
 import { AuthModule } from 'src/users/auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Material } from './materials.entity';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   controllers: [MaterialsController],
   providers: [MaterialsService],
-  imports: [AuthModule, TypeOrmModule.forFeature([Material])]
+  imports: [AuthModule, TypeOrmModule.forFeature([Material]), UsersModule]
 })
 export class MaterialsModule {}

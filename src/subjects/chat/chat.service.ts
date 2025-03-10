@@ -1,0 +1,37 @@
+import { Injectable } from '@nestjs/common';
+import { OpenAI } from 'openai';
+require("dotenv").config();
+
+@Injectable()
+export class ChatService {
+  private openai: OpenAI;
+
+  constructor() {
+    console.log(process.env.OPENAI_API_KEY)
+    this.openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY, // Sua chave de API
+    });
+  }
+
+  async getChatResponse(userMessage: string): Promise<string> {
+    try {
+        console.log("chat",userMessage)
+      const response = await this.openai.chat.completions.create({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'user',
+            content: userMessage,
+          },
+        ],
+        max_tokens:5,
+        temperature:0
+      });
+      console.log("chat-resposta",response.choices[0].message.content)
+      return response.choices[0].message.content;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Erro ao processar a mensagem');
+    }
+  }
+}

@@ -6,10 +6,15 @@ import { FindOneOptions } from 'typeorm';
 import { User } from './user.entity';
 import { UUID } from 'typeorm/driver/mongodb/bson.typings';
 import { UserResponseDTO } from './dto/response-user.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { IncreasePointsEvent } from './events/increase-points.event';
 
 @Injectable()
 export class UsersService {
-    constructor(private repo: UsersRepository) { }
+    constructor(
+        private repo: UsersRepository,
+        private emitter: EventEmitter2
+    ) { }
 
     async create(data: CreateUserDTO) {
         delete data.passwordConfirmation
@@ -37,9 +42,46 @@ export class UsersService {
         let user = await this.findOne({
             where: {
                 id: userId
-            }
+            },
+            relations: ['subjects', 'subjects.subject', 'achievements'],
+            select: {
+                id: true,
+                course: true,
+                name: true,
+                email: true,
+                registrationNumber: true,
+                points: true,
+                enrollDate: true,
+                role: true,
+                subjects: {
+                    id: true,
+                    subject: {
+                        id: true,
+                        name: true,
+                        description: true
+                    }
+                },
+                achievements: {
+                    id: true,
+                    title: true
+                }
+            },
         })
 
         return UserResponseDTO.from(user)
+    }
+
+    async listUserRanks() {
+        const result = await this.repo.listUsersByRank()
+        return result
+    }
+
+    async updatePoints(user: User, points: number) {
+        user.points += points
+        const result = await this.repo.update(user.id, user)
+        if (result) {
+            this.emitter.emit('points.increase', new IncreasePointsEvent(user.id, points))
+        }
+        return result
     }
 }

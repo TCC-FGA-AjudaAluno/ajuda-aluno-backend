@@ -2,6 +2,7 @@ import { User } from "src/users/user.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Subject } from "../entities/subjects.entity";
 import { Comment } from "./comments/comments.entity";
+import { Vote } from "src/votes/vote.entity";
 
 @Entity()
 export class Post {
@@ -37,4 +38,7 @@ export class Post {
 
     @OneToMany(() => Comment, comment => comment.post)
     comments: Comment[];
+
+    @OneToMany(() => Vote, vote => vote.post)
+    votes: Array<Vote>
 }
